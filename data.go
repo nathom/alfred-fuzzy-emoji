@@ -1,5 +1,7 @@
 package main
 
+// scraped from https://unicode.org/emoji/charts/emoji-list.html using emoji.py
+
 var Emoji = []string{
 	`😀`,
 	`😃`,

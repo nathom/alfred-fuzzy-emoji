@@ -6,7 +6,6 @@ import (
 	"github.com/reinhrst/fzf-lib"
 	"os"
 	"strings"
-	// "time"
 )
 
 const MAXRESULTS = 20
@@ -36,6 +35,7 @@ func main() {
 
 	var options = fzf.DefaultOptions()
 	var myFzf = fzf.New(Descriptions, options)
+	defer myFzf.End()
 	var result fzf.SearchResult
 	myFzf.Search(query)
 	result = <-myFzf.GetResultChannel()
@@ -47,7 +47,7 @@ func main() {
 	results := make([]AlfredItem, 0, maxResults)
 	for i := 0; i < maxResults; i++ {
 		match := result.Matches[i]
-		icon := fmt.Sprintf("/Users/nathan/emoji-go/images/%d.png", match.HayIndex)
+		icon := fmt.Sprintf("/Users/nathan/alfred-fuzzy-emoji/images/%d.png", match.HayIndex)
 		item := AlfredItem{
 			Type:     "file",
 			Title:    Titles[match.HayIndex] + " " + Emoji[match.HayIndex],
@@ -59,9 +59,24 @@ func main() {
 		}
 		results = append(results, item)
 	}
+
+	if len(results) == 0 {
+		results = []AlfredItem{
+			{
+				Type:     "file",
+				Title:    "No results 😢",
+				Subtitle: "Try searching again",
+				Icon: IconItem{
+					// 😵 image
+					Path: "/Users/nathan/alfred-fuzzy-emoji/images/55.png",
+				},
+			},
+		}
+	}
+
 	b, err := json.Marshal(ReturnItem{results})
 	if err != nil {
 		return
 	}
-	fmt.Println(string(b))
+	fmt.Print(string(b))
 }
